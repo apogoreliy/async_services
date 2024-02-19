@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  rabbitmqServer:
+    container_name: 'rabbitmq'
+    image: "rabbitmq:3.12.13-management"
+    hostname: "rabbitmq"
+    ports:
+#      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "user"
+      RABBITMQ_DEFAULT_PASS: "pass"
+    networks:
+      - rabbitnetwork
+
+  receiver:
+    container_name: receiver
+    build:
+      context: ./receiver
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - rabbitmqServer
+    ports:
+      - 8000:8000
+    environment:
+      RABBITMQ_USERNAME: "user"
+      RABBITMQ_PASSWORD: "pass"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_QUEUE: "RABBITMQ_QUEUE"
+      RABBITMQ_ROUTING_KEY: "RABBITMQ_ROUTING_KEY"
+      RABBITMQ_EXCHANGE: "RABBITMQ_EXCHANGE"
+    networks:
+      - rabbitnetwork
+
+  producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+    container_name: producer
+    depends_on:
+      - rabbitmqServer
+      - receiver
+    ports:
+      - 7000:7000
+    environment:
+      RABBITMQ_USERNAME: "user"
+      RABBITMQ_PASSWORD: "pass"
+      RABBITMQ_HOST:  "rabbitmq"
+      RABBITMQ_QUEUE: "RABBITMQ_QUEUE"
+      RABBITMQ_ROUTING_KEY: "RABBITMQ_ROUTING_KEY"
+      RABBITMQ_EXCHANGE: "RABBITMQ_EXCHANGE"
+      SERVER_PORT: 7000
+      SERVER_HOST: receiver
+    networks:
+      - rabbitnetwork
+    restart: always
+
+
+networks:
+  rabbitnetwork:
+    driver: bridge
