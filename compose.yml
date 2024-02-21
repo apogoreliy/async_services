@@ -6,7 +6,6 @@ services:
     image: "rabbitmq:3.12.13-management"
     hostname: "rabbitmq"
     ports:
-#      - "5672:5672"
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: "user"
@@ -14,11 +13,12 @@ services:
     networks:
       - rabbitnetwork
 
+
   receiver:
     container_name: receiver
     build:
-      context: ./receiver
-      dockerfile: Dockerfile
+      context: ../async_services
+      dockerfile: ./receiver/Dockerfile
     restart: always
     depends_on:
       - rabbitmqServer
@@ -34,11 +34,13 @@ services:
     networks:
       - rabbitnetwork
 
+
   producer:
-    build:
-      context: ./producer
-      dockerfile: Dockerfile
     container_name: producer
+    build:
+      context: ../async_services
+      dockerfile: ./producer/Dockerfile
+    restart: always
     depends_on:
       - rabbitmqServer
       - receiver
@@ -52,11 +54,8 @@ services:
       RABBITMQ_ROUTING_KEY: "RABBITMQ_ROUTING_KEY"
       RABBITMQ_EXCHANGE: "RABBITMQ_EXCHANGE"
       SERVER_PORT: 7000
-      SERVER_HOST: receiver
     networks:
       - rabbitnetwork
-    restart: always
-
 
 networks:
   rabbitnetwork:

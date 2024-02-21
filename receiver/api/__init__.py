@@ -1,6 +1,6 @@
 import logging
 
-from .gateway.rabbitmq import RabbitmqServer
+from api.lib.rabbitmq_server import RabbitmqServer
 
 
 def main():

@@ -19,7 +19,9 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy our source code
-COPY /api ./api
+COPY /receiver/api ./api
+COPY ./lib ./api/lib/
+
 
 # Run the application
 CMD ["python", "-m", "api"]

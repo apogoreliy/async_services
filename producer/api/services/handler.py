@@ -1,11 +1,16 @@
 from aiohttp import web
 
+from api.lib.rabbitmq_server import RabbitmqServer
+
 
 class Handler:
-    def __init__(self, rabbitmq) -> None:
-        self.rabbitmq = rabbitmq
-
-    async def publish(self, request):
+    @staticmethod
+    async def publish(request):
         body = await request.json()
-        self.rabbitmq.publish(message={"data": body})
+        rabbitmq = RabbitmqServer()
+        rabbitmq.publish(message={"data": body})
         return web.json_response({'message': body})
+
+    @staticmethod
+    async def health_status(request):
+        return web.json_response({'message': "UP"})

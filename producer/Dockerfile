@@ -16,12 +16,13 @@ WORKDIR /producer
 
 # Install dependencies
 COPY requirements.txt .
-COPY app.py .
+#COPY app1.py .
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy source code
-COPY ./api ./api
+COPY /producer/api ./api
+COPY ./lib ./api/lib/
 
 # Run the application
 CMD ["python", "-m", "api"]

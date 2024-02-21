@@ -3,12 +3,7 @@ import os
 
 from aiohttp import web
 
-from .gateway.rabbitmq import RabbitMQ
-from .services.handler import Handler
-
-
-async def health_status(request):
-    return web.json_response({'message': "UP"})
+from api.services.handler import Handler
 
 
 def main():
@@ -18,13 +13,10 @@ def main():
         level=logging.INFO
     )
 
-    rabbitmq_instance = RabbitMQ()
     app = web.Application()
-    handler = Handler(rabbitmq_instance)
-
     app.add_routes([
-        web.get('/', health_status),
-        web.post('/', handler.publish),
+        web.get('/', Handler.health_status),
+        web.post('/', Handler.publish),
     ])
 
     web.run_app(
